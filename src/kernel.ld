@@ -8,4 +8,19 @@ SECTIONS {
 		KEEP(*(.text.boot));
 		*(.text .text.*);
 	}
+
+	.rodata : {
+		*(.rodata.*)
+		. = ALIGN(4);
+	}
+
+	.data : {
+		*(.data*);
+		. = ALIGN(4);
+	}
+
+	.bss : {
+		*(.bss*);
+		. = ALIGN(4);
+	}
 }
