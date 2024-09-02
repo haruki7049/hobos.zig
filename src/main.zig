@@ -1,3 +1,3 @@
-export fn _start() callconv(.Naked) noreturn {
+export fn _start() linksection(".text.boot") callconv(.Naked) noreturn {
     while (true) {}
 }
