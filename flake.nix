@@ -36,7 +36,7 @@
           ];
 
           text = ''
-            qemu-system-riscv32 -machine virt -kernel ${hobos}/bin/hobos.elf -bios default
+            qemu-system-riscv32 -machine virt -bios default -serial mon:stdio -kernel ${hobos}/bin/hobos.elf
           '';
         };
       in
