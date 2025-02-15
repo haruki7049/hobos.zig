@@ -12,9 +12,4 @@ stdenv.mkDerivation {
   nativeBuildInputs = [
     zig.hook
   ];
-
-  zigBuildFlags = [
-    "-Doptimize=Debug"
-    "-Dtarget=riscv32-freestanding"
-  ];
 }
