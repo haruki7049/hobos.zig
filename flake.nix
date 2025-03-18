@@ -23,7 +23,7 @@
 
       perSystem = { pkgs, stdenv, lib, ... }:
         let
-          zig = pkgs.zig_0_13;
+          zig = pkgs.zig_0_14;
           hobos = pkgs.callPackage ./utils/nix/hobos { };
           runner = pkgs.callPackage ./utils/nix/runner {
             inherit hobos;
