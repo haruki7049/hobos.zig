@@ -21,7 +21,13 @@
         inputs.treefmt-nix.flakeModule
       ];
 
-      perSystem = { pkgs, stdenv, lib, ... }:
+      perSystem =
+        {
+          pkgs,
+          stdenv,
+          lib,
+          ...
+        }:
         let
           zig = pkgs.zig_0_14;
           hobos = pkgs.callPackage ./utils/nix/hobos { };

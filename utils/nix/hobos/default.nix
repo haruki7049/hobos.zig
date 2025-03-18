@@ -1,6 +1,7 @@
-{ stdenv
-, lib
-, zig
+{
+  stdenv,
+  lib,
+  zig,
 }:
 
 stdenv.mkDerivation {

@@ -1,6 +1,7 @@
-{ writeShellApplication
-, qemu_full
-, hobos
+{
+  writeShellApplication,
+  qemu_full,
+  hobos,
 }:
 
 writeShellApplication {
