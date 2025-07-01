@@ -16,7 +16,7 @@ pub fn build(b: *std.Build) !void {
     });
     const kernel = b.addExecutable(.{
         .name = "hobos.elf",
-        .root_module = kernel_mod
+        .root_module = kernel_mod,
     });
     kernel.setLinkerScript(b.path("src/kernel.ld"));
 
