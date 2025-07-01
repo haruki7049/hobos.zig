@@ -12,7 +12,7 @@ pub fn build(b: *std.Build) !void {
     const kernel_mod = b.createModule(.{
         .root_source_file = b.path("src/root.zig"),
         .target = b.resolveTargetQuery(query),
-        .optimize = .Debug,
+        .optimize = optimize,
     });
     const kernel = b.addExecutable(.{
         .name = "hobos.elf",
@@ -27,9 +27,9 @@ pub fn build(b: *std.Build) !void {
 
     // Runner declaration
     const runner_mod = b.createModule(.{
-        .root_source_file = b.path("src/root.zig"),
-        .target = b.resolveTargetQuery(query),
-        .optimize = .Debug,
+        .root_source_file = b.path("runner/main.zig"),
+        .target = target,
+        .optimize = optimize,
     });
     const runner = b.addExecutable(.{
         .name = "runner",
