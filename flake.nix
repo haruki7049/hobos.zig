@@ -38,10 +38,6 @@
             nativeBuildInputs = [
               pkgs.zig_0_14.hook
             ];
-
-            zigBuildFlags = [
-              "-Dtarget=riscv32-freestanding"
-            ];
           };
         in
         {
