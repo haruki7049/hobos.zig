@@ -30,9 +30,18 @@
         }:
         let
           zig = pkgs.zig_0_14;
-          hobos = pkgs.callPackage ./utils/nix/hobos { };
-          runner = pkgs.callPackage ./utils/nix/runner {
-            inherit hobos;
+          hobos = pkgs.stdenv.mkDerivation {
+            pname = "hobos";
+            version = "dev";
+            src = lib.cleanSource ./.;
+
+            nativeBuildInputs = [
+              pkgs.zig_0_14.hook
+            ];
+
+            zigBuildFlags = [
+              "-Dtarget=riscv32-freestanding"
+            ];
           };
         in
         {
@@ -43,12 +52,8 @@
             programs.actionlint.enable = true;
           };
 
-          checks = {
-            inherit hobos;
-          };
-
           packages = {
-            inherit hobos runner;
+            inherit hobos;
             default = hobos;
           };
 

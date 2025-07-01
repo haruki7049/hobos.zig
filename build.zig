@@ -14,7 +14,7 @@ pub fn build(b: *std.Build) void {
     // EXE DECLARETION
     const kernel = b.addExecutable(.{
         .name = "hobos.elf",
-        .root_source_file = b.path("src/main.zig"),
+        .root_source_file = b.path("src/root.zig"),
         .target = target,
         .optimize = optimize,
     });
@@ -24,11 +24,13 @@ pub fn build(b: *std.Build) void {
             .sub_path = "src/kernel.ld",
         },
     });
-    b.installArtifact(kernel);
+    const kernel_install = b.addInstallFileWithDir(kernel.getEmittedBin(), .lib, "hobos.elf");
+    kernel_install.step.dependOn(&kernel.step);
+    b.getInstallStep().dependOn(&kernel_install.step);
 
     // UNIT TESTS
     const kernel_unit_tests = b.addTest(.{
-        .root_source_file = b.path("src/main.zig"),
+        .root_source_file = b.path("src/root.zig"),
         .target = target,
         .optimize = optimize,
     });
