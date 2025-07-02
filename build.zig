@@ -52,13 +52,12 @@ pub fn build(b: *std.Build) !void {
     const run_step = b.step("run", "Run hobos.zig by runner & Qemu");
     run_step.dependOn(&run_cmd.step);
 
-    // Kernel unit tests
-    const kernel_unit_tests = b.addTest(.{
-        .root_source_file = b.path("src/root.zig"),
-        .target = target,
-        .optimize = optimize,
+    // Docs
+    const docs_step = b.step("docs", "Emit docs");
+    const docs_install = b.addInstallDirectory(.{
+        .source_dir = kernel.getEmittedDocs(),
+        .install_dir = .prefix,
+        .install_subdir = "share/lv2.zig/docs",
     });
-    const run_kernel_unit_tests = b.addRunArtifact(kernel_unit_tests);
-    const test_step = b.step("test", "Run unit tests");
-    test_step.dependOn(&run_kernel_unit_tests.step);
+    docs_step.dependOn(&docs_install.step);
 }
