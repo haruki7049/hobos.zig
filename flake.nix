@@ -29,7 +29,6 @@
           ...
         }:
         let
-          zig = pkgs.zig_0_14;
           hobos = pkgs.stdenv.mkDerivation {
             pname = "hobos";
             version = "dev";
@@ -56,7 +55,7 @@
           devShells.default = pkgs.mkShell {
             nativeBuildInputs = [
               # Compiler
-              zig
+              pkgs.zig_0_14
 
               # LSP
               pkgs.zls
