@@ -46,6 +46,10 @@
               # QEMU
               pkgs.qemu_full
 
+              # GRUB2 to create ISO
+              pkgs.grub2
+              pkgs.libisoburn
+
               # LLVM Tools
               pkgs.libllvm
             ];

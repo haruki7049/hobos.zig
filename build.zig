@@ -25,6 +25,33 @@ pub fn build(b: *std.Build) !void {
     kernel_install.step.dependOn(&kernel.step);
     b.getInstallStep().dependOn(&kernel_install.step);
 
+    // ISO Installation
+    const iso_dir = b.fmt("{s}/iso_root", .{b.cache_root.path.?});
+    const boot_dir = b.fmt("{s}/iso_root/boot", .{b.cache_root.path.?});
+    const grub_dir = b.fmt("{s}/iso_root/boot/grub", .{b.cache_root.path.?});
+    const kernel_path = b.getInstallPath(.lib, kernel.out_filename);
+    const iso_path = b.fmt("{s}/hobos.iso", .{b.lib_dir});
+
+    const iso_cmd_str: []const []const u8 = &[_][]const u8{
+        "/bin/sh",
+        "-c",
+        b.fmt("mkdir -p {s} && cp {s} {s} && cp grub.cfg {s} && grub-mkrescue -o {s} {s}", .{
+            grub_dir,
+            kernel_path,
+            boot_dir,
+            grub_dir,
+            iso_path,
+            iso_dir,
+        }),
+    };
+
+    const iso_cmd = b.addSystemCommand(iso_cmd_str);
+    iso_cmd.step.dependOn(&kernel.step);
+
+    const iso_step = b.step("iso", "Build an ISO image");
+    iso_step.dependOn(&iso_cmd.step);
+    b.default_step.dependOn(iso_step);
+
     // Runner declaration
     const yazap = b.dependency("yazap", .{});
     const runner_mod = b.createModule(.{
