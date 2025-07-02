@@ -26,11 +26,13 @@ pub fn build(b: *std.Build) !void {
     b.getInstallStep().dependOn(&kernel_install.step);
 
     // Runner declaration
+    const yazap = b.dependency("yazap", .{});
     const runner_mod = b.createModule(.{
         .root_source_file = b.path("runner/main.zig"),
         .target = target,
         .optimize = optimize,
     });
+    runner_mod.addImport("yazap", yazap.module("yazap"));
     const runner = b.addExecutable(.{
         .name = "runner",
         .root_module = runner_mod,
