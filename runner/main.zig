@@ -18,17 +18,17 @@ pub fn main() !void {
 
     const matches = try app.parseProcess();
 
-    if (matches.getSingleValue("KERNEL_PATH")) |kernel_path| {
+    if (matches.getSingleValue("ISO_PATH")) |iso_path| {
         const argv = [_][]const u8{
-            "qemu-system-riscv32",
+            "qemu-system-x86_64",
             "-machine",
-            "virt",
-            "-bios",
-            "default",
-            "-serial",
-            "mon:stdio",
-            "-kernel",
-            kernel_path,
+            "pc-i440fx-10.0",
+            "-cdrom",
+            iso_path,
+            "-debugcon",
+            "stdio",
+            "-vga",
+            "std",
         };
 
         // By default, child will inherit stdout & stderr from its parents,
@@ -47,20 +47,20 @@ pub fn main() !void {
 
         std.process.exit(term.Exited);
     } else {
-        std.debug.print("Runner executed with default value, './zig-out/lib/hobos.elf'\n", .{});
+        const iso_path = "./zig-out/lib/hobos.iso";
 
-        const kernel_path = "./zig-out/lib/hobos.elf";
+        std.debug.print("Runner executed with default value, '{s}'\n", .{iso_path});
 
         const argv = [_][]const u8{
-            "qemu-system-riscv32",
+            "qemu-system-x86_64",
             "-machine",
-            "virt",
-            "-bios",
-            "default",
-            "-serial",
-            "mon:stdio",
-            "-kernel",
-            kernel_path,
+            "pc-i440fx-10.0",
+            "-cdrom",
+            iso_path,
+            "-debugcon",
+            "stdio",
+            "-vga",
+            "std",
         };
 
         // By default, child will inherit stdout & stderr from its parents,

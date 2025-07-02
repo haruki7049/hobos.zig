@@ -7,7 +7,7 @@ pub fn build(b: *std.Build) !void {
 
     // Kernel declaration
     const query = try Query.parse(.{
-        .arch_os_abi = "riscv32-freestanding",
+        .arch_os_abi = "x86_64-freestanding",
     });
     const kernel_mod = b.createModule(.{
         .root_source_file = b.path("src/root.zig"),
@@ -78,6 +78,7 @@ pub fn build(b: *std.Build) !void {
     // Run step
     const run_step = b.step("run", "Run hobos.zig by runner & Qemu");
     run_step.dependOn(&run_cmd.step);
+    run_step.dependOn(&iso_cmd.step);
 
     // Docs
     const docs_step = b.step("docs", "Emit docs");

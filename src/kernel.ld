@@ -1,26 +1,23 @@
 ENTRY(_start)
 
 SECTIONS {
-	. = 0x80200000;
-	__kernel_base = .;
+    . = 0x100000;
 
-	.text : {
-		KEEP(*(.text.boot));
-		*(.text .text.*);
-	}
+    .text : ALIGN(4K) {
+        KEEP(*(.multiboot))
+        *(.text)
+    }
 
-	.rodata : {
-		*(.rodata.*)
-		. = ALIGN(4);
-	}
+    .rodata : ALIGN(4K) {
+        *(.rodata)
+    }
 
-	.data : {
-		*(.data*);
-		. = ALIGN(4);
-	}
+    .data : ALIGN(4K) {
+        *(.data)
+    }
 
-	.bss : {
-		*(.bss*);
-		. = ALIGN(4);
-	}
+    .bss : ALIGN(4K) {
+        *(.bss)
+        *(COMMON)
+    }
 }
