@@ -24,36 +24,14 @@
       perSystem =
         {
           pkgs,
-          stdenv,
-          lib,
           ...
         }:
-        let
-          hobos = pkgs.stdenv.mkDerivation {
-            pname = "hobos";
-            version = "dev";
-            src = lib.cleanSource ./.;
-
-            nativeBuildInputs = [
-              pkgs.zig_0_14.hook
-            ];
-          };
-        in
         {
           treefmt = {
             projectRootFile = "flake.nix";
             programs.nixfmt.enable = true;
             programs.zig.enable = true;
             programs.actionlint.enable = true;
-          };
-
-          packages = {
-            inherit hobos;
-            default = hobos;
-          };
-
-          checks = {
-            inherit hobos;
           };
 
           devShells.default = pkgs.mkShell {
