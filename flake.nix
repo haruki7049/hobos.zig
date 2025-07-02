@@ -52,6 +52,10 @@
             default = hobos;
           };
 
+          checks = {
+            inherit hobos;
+          };
+
           devShells.default = pkgs.mkShell {
             nativeBuildInputs = [
               # Compiler
