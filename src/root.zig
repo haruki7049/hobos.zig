@@ -1,4 +1,4 @@
-const console = @import("console.zig");
+const Console = @import("console.zig");
 
 const MultibootHeader = extern struct {
     magic: u32,
@@ -32,7 +32,7 @@ export fn _start() void {
 }
 
 fn kmain() void {
-    console.initialize();
+    const console: Console = Console.new();
     console.putCharAt('H', 15, 1, 1);
 
     while (true) {}
