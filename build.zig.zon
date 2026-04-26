@@ -4,12 +4,7 @@
     .fingerprint = 0x6c1f6464423e6000,
     .minimum_zig_version = "0.14.0",
 
-    .dependencies = .{
-        .yazap = .{
-            .url = "https://github.com/prajwalch/yazap/archive/refs/tags/v0.6.3.tar.gz",
-            .hash = "yazap-0.6.3-Z1t-EiLlAQCR5mUSOlF1PovnwyPcIUGeV02lAIVMUEOc",
-        },
-    },
+    .dependencies = .{},
 
     .paths = .{
         "build.zig",

@@ -25,4 +25,8 @@ zig-cache/
 .direnv/
 
 # Nix's result
-result
+result*
+result-*
+
+# Test mount directory
+/mnt/
