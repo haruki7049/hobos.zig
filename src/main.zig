@@ -2,10 +2,8 @@ const std = @import("std");
 const uefi = std.os.uefi;
 const GraphicsOutput = uefi.protocol.GraphicsOutput;
 
-pub fn main() noreturn {
-    const graphics_output = locate_graphics_protocol() catch |err| {
-        @panic(err);
-    } orelse {
+pub fn main() uefi.Error!void {
+    const graphics_output = try locate_graphics_protocol() orelse {
         @panic("The GraphicsOutput is null");
     };
     const vram_addr = graphics_output.mode.frame_buffer_base;
@@ -97,15 +95,11 @@ fn fill_color(vram: *[]u32, color: Color) void {
 const EfiVoid = u8;
 
 fn locate_graphics_protocol() !?*GraphicsOutput {
-    var gop: ?*uefi.protocol.GraphicsOutput = null;
     const boot_services = uefi.system_table.boot_services orelse return null;
-    const status = boot_services.locateProtocol(
-        &GraphicsOutput.guid,
+    const protocol = try boot_services.locateProtocol(
+        uefi.protocol.GraphicsOutput,
         null,
-        @ptrCast(&gop),
     );
 
-    if (status != .success) return null;
-
-    return gop;
+    return protocol;
 }
