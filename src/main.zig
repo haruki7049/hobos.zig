@@ -50,9 +50,13 @@ export fn _start() callconv(.naked) noreturn {
 noinline fn kmain() callconv(.c) noreturn {
     // Initialize our VGA driver
     console.init();
+
     // Printing string
-    console.print("Hello {s} kernel!\n", .{"zig"});
-    console.print("Hello {s} kernel!\n", .{"zig"});
+    const words: []const []const u8 = &.{ "zig", "Haruki7049", "Baremetal" };
+    for (words) |w| {
+        console.print("Hello {s} kernel!\n", .{w});
+    }
+
     // Loop forever as there is nothing to do
     while (true) {
         asm volatile ("hlt");
