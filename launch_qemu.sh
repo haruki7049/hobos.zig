@@ -3,18 +3,8 @@
 PROJ_ROOT="$(dirname $(dirname ${BASH_SOURCE:-$0}))"
 cd "${PROJ_ROOT}"
 
-PATH_TO_EFI="$1"
-rm -rf mnt
-mkdir -p mnt/EFI/BOOT
+qemu-system-x86_64 -kernel zig-out/bin/kernel.elf
 
-cp ${PATH_TO_EFI} mnt/EFI/BOOT/BOOTX64.EFI
-set +e
-
-qemu-system-x86_64 \
-  -m 4G \
-  -bios third-party/ovmf/RELEASEX64_OVMF.fd \
-  -drive format=raw,file=fat:rw:mnt \
-  -device isa-debug-exit,iobase=0xf4,iosize=0x01
 RETCODE=$?
 set -e
 

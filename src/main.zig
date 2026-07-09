@@ -1,105 +1,60 @@
-const std = @import("std");
-const uefi = std.os.uefi;
-const GraphicsOutput = uefi.protocol.GraphicsOutput;
+const console = @import("console.zig");
 
-pub fn main() uefi.Error!void {
-    const graphics_output = try locate_graphics_protocol() orelse {
-        @panic("The GraphicsOutput is null");
-    };
-    const vram_addr = graphics_output.mode.frame_buffer_base;
-    const vram_byte_size = graphics_output.mode.frame_buffer_size;
-    var vram: []u32 = @as([*]u32, @ptrFromInt(vram_addr))[0 .. vram_byte_size / @sizeOf(u32)];
-    mainloop(&vram);
+const MB_HEADER_MAGIC = 0x1BADB002;
+const MB_FLAG_ALIGN = 1 << 0;
+const MB_FLAG_MEMINFO = 1 << 1;
+const FLAGS = MB_FLAG_ALIGN | MB_FLAG_MEMINFO;
 
+/// https://www.gnu.org/software/grub/manual/multiboot/multiboot.html#Header-layout
+const MultibootHeader = packed struct {
+    magic: u32 = MB_HEADER_MAGIC,
+    flags: u32 = FLAGS,
+    checksum: u32,
+    padding: u32 = 0,
+};
+
+export var multiboot: MultibootHeader align(4) linksection(".multiboot") = .{
+    // Here we are adding magic and flags and ~ to get 1's complement and by adding 1 we get 2's complement
+    .checksum = ~@as(u32, (MB_HEADER_MAGIC + FLAGS)) + 1,
+};
+
+var stack_bytes: [16 * 1024]u8 align(16) linksection(".bss") = undefined;
+
+// We specify that this function is "naked" to let the compiler know
+// not to generate a standard function prologue and epilogue, since
+// we don't have a stack yet.
+export fn _start() callconv(.naked) noreturn {
+    // We use inline assembly to set up the stack before jumping to
+    // our kernel entry point.
+    asm volatile (
+        \\ movl %[stack_top], %%esp
+        \\ movl %%esp, %%ebp
+        \\ call %[kmain:P]
+        :
+        // The stack grows downwards on x86, so we need to point ESP register
+        // to one element past the end of `stack_bytes`.
+        //
+        // Finally, we pass the whole expression as an input operand with the
+        // "immediate" constraint to force the compiler to encode this as an
+        // absolute address. This prevents the compiler from doing unnecessary
+        // extra steps to compute the address at runtime (especially in Debug mode),
+        // which could possibly clobber registers that are specified by multiboot
+        // to hold special values (e.g. EAX).
+        : [stack_top] "i" (stack_bytes[stack_bytes.len..].ptr),
+          // We let the compiler handle the reference to kmain by passing it as an input operand as well.
+          [kmain] "X" (&kmain),
+    );
+}
+
+// We use noinline to make sure it don't get inlined by compiler
+noinline fn kmain() callconv(.c) noreturn {
+    // Initialize our VGA driver
+    console.init();
+    // Printing string
+    console.print("Hello {s} kernel!\n", .{"zig"});
+    console.print("Hello {s} kernel!\n", .{"zig"});
+    // Loop forever as there is nothing to do
     while (true) {
         asm volatile ("hlt");
     }
-}
-
-fn mainloop(vram: *[]u32) void {
-    var color: Color = Color.zero();
-
-    while (true) {
-        manage_color(&color);
-        fill_color(vram, color);
-    }
-}
-
-const Color = packed struct {
-    const Self = @This();
-
-    r: u8,
-    g: u8,
-    b: u8,
-    a: u8,
-
-    pub fn red() Self {
-        return .{
-            .r = 0,
-            .g = 0,
-            .b = 0,
-            .a = 255,
-        };
-    }
-
-    pub fn green() Self {
-        return .{
-            .r = 0,
-            .g = 255,
-            .b = 0,
-            .a = 0,
-        };
-    }
-
-    pub fn blue() Self {
-        return .{
-            .r = 0,
-            .g = 0,
-            .b = 255,
-            .a = 0,
-        };
-    }
-
-    pub fn zero() Self {
-        return .{
-            .r = 0,
-            .g = 0,
-            .b = 0,
-            .a = 0,
-        };
-    }
-};
-
-fn manage_color(color: *Color) void {
-    if (color.r == 255) {
-        color.*.r = 0;
-    }
-    if (color.g == 255) {
-        color.*.g = 0;
-    }
-    if (color.b == 255) {
-        color.*.b = 0;
-    }
-
-    color.*.r += 1;
-    color.*.g += 1;
-    color.*.b += 1;
-}
-
-fn fill_color(vram: *[]u32, color: Color) void {
-    for (0..vram.len) |i| {
-        vram.*[i] = @bitCast(color);
-    }
-}
-
-const EfiVoid = u8;
-
-fn locate_graphics_protocol() !?*GraphicsOutput {
-    const boot_services = uefi.system_table.boot_services orelse return null;
-    const protocol = try boot_services.locateProtocol(
-        uefi.protocol.GraphicsOutput,
-        null,
-    );
-
-    return protocol;
 }
