@@ -26,30 +26,39 @@
           pkgs,
           ...
         }:
+        let
+          buildInputs = [ ];
+          nativeBuildInputs = [
+            pkgs.zig_0_16 # Ziglang compiler
+            pkgs.zls_0_16 # Ziglang LSP
+            pkgs.nil # Nix LSP
+            pkgs.qemu # Qemu
+          ];
+        in
         {
           treefmt = {
-            projectRootFile = "flake.nix";
+            projectRootFile = ".git/config";
+
+            # Nix
             programs.nixfmt.enable = true;
+
+            # Zig
             programs.zig.enable = true;
+            programs.zig.package = pkgs.zig_0_16;
+
+            # GitHub Actions
             programs.actionlint.enable = true;
+
+            # Markdown
+            programs.mdformat.enable = true;
+
+            # Shell Script
+            programs.shfmt.enable = true;
+            programs.shellcheck.enable = true;
           };
 
           devShells.default = pkgs.mkShell {
-            nativeBuildInputs = [
-              # Compiler
-              pkgs.zig_0_15
-
-              # LSP
-              pkgs.zls
-              pkgs.nil
-
-              # QEMU
-              pkgs.qemu
-            ];
-
-            shellHook = ''
-              export PS1="\n[nix-shell:\w]$ "
-            '';
+            inherit buildInputs nativeBuildInputs;
           };
         };
     };
