@@ -6,7 +6,7 @@ const MB_FLAG_MEMINFO = 1 << 1;
 const FLAGS = MB_FLAG_ALIGN | MB_FLAG_MEMINFO;
 
 /// https://www.gnu.org/software/grub/manual/multiboot/multiboot.html#Header-layout
-const MultibootHeader = packed struct {
+const MultibootHeader = extern struct {
     magic: u32 = MB_HEADER_MAGIC,
     flags: u32 = FLAGS,
     checksum: u32,
