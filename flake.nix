@@ -23,17 +23,40 @@
 
       perSystem =
         {
+          lib,
           pkgs,
           ...
         }:
         let
+          ZIG = pkgs.zig_0_16; # Ziglang compiler
+          ZLS = pkgs.zls_0_16; # Ziglang LSP
+
           buildInputs = [ ];
           nativeBuildInputs = [
-            pkgs.zig_0_16 # Ziglang compiler
-            pkgs.zls_0_16 # Ziglang LSP
+            ZIG
+            ZLS
             pkgs.nil # Nix LSP
             pkgs.qemu # Qemu
+            pkgs.zon2nix # zon2nix for Nix packaging
+            pkgs.nushell # Shell scripting
           ];
+
+          hobos = pkgs.stdenv.mkDerivation {
+            name = "hobos.zig";
+            src = lib.cleanSource ./.;
+            doCheck = true;
+            dontSetZigDefaultFlags = true;
+
+            zigBuildFlags = [ "--release=safe" ];
+
+            nativeBuildInputs = [
+              ZIG.hook
+            ];
+
+            postConfigure = ''
+              ln -s ${pkgs.callPackage ./.deps.nix { }} zig-pkg
+            '';
+          };
         in
         {
           treefmt = {
@@ -55,6 +78,15 @@
             # Shell Script
             programs.shfmt.enable = true;
             programs.shellcheck.enable = true;
+          };
+
+          packages = {
+            inherit hobos;
+            default = hobos;
+          };
+
+          checks = {
+            inherit hobos;
           };
 
           devShells.default = pkgs.mkShell {

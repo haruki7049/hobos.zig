@@ -1,4 +1,5 @@
-const console = @import("console.zig");
+const hobos = @import("hobos.zig");
+const console = hobos.console;
 
 const MB_HEADER_MAGIC = 0x1BADB002;
 const MB_FLAG_ALIGN = 1 << 0;
