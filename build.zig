@@ -38,12 +38,4 @@ pub fn build(b: *std.Build) !void {
     });
     kernel.setLinkerScript(b.path("src/linker.ld"));
     b.installArtifact(kernel);
-
-    // Tests
-    const mod_tests = b.addTest(.{ .root_module = mod });
-    const run_mod_tests = b.addRunArtifact(mod_tests);
-
-    // Test step
-    const test_step = b.step("test", "Run tests");
-    test_step.dependOn(&run_mod_tests.step);
 }

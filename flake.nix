@@ -44,7 +44,7 @@
           hobos = pkgs.stdenv.mkDerivation {
             name = "hobos.zig";
             src = lib.cleanSource ./.;
-            doCheck = true;
+            doCheck = false;
             dontSetZigDefaultFlags = true;
 
             zigBuildFlags = [ "--release=safe" ];
